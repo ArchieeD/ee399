@@ -1,7 +1,10 @@
 import numpy as np 
 from sympy import symbols, cos,sin,pi, simplify
 from sympy.matrices import Matrix
+import sys
+sys.path.insert(0,'/Users/archiedeng/Documents/ee399/lab1/task2') 
 from extract_values import read_csv
+
 
 neutral_start_pos = [0,0,0,0,0,0]
 
@@ -37,10 +40,10 @@ x = simplify(overall_trans_matrix[0,3])
 y = simplify(overall_trans_matrix[1,3])
 z = simplify(overall_trans_matrix[2,3])
 
-joint_angles_list = read_csv('final_values.csv', 'a')
-coords_list = read_csv('final_values.csv', 'c')
+joint_angles_list = read_csv('../task2/final_values.csv', 'a')
+coords_list = read_csv('../task2/final_values.csv', 'c')
 
-print("Calculated end effector coordinates vs associated measured positions")
+print("angle,",'x(calc),','y(calc),','z(calc),','x(meas),','y(meas),','z(meas),','x(error%),','y(error%),','z(error%)')
 i = 0
 for joint_angles in joint_angles_list:
     for j in range(len(joint_angles)): joint_angles[j] = np.radians(joint_angles[j])
@@ -49,5 +52,7 @@ for joint_angles in joint_angles_list:
     sub_y = y.subs(subs_dict)
     sub_z = z.subs(subs_dict)
     calc_pos = [sub_x, sub_y, sub_z]
-    print('calculated coords= ', calc_pos, "measured positions= ", coords_list[i][:3])
+    print(np.round(np.degrees(joint_angles),2),',',np.round(np.array(calc_pos).astype(np.float),3).tolist(),','
+          , coords_list[i][:3],',', 
+          np.round(np.divide((np.abs(np.subtract(calc_pos,coords_list[i][:3])*100)), calc_pos).astype(np.float),3).tolist())
     i+=1
